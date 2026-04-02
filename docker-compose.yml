@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - secret-data:/app/data
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      - SITE_ADDRESS=${SITE_ADDRESS:-localhost}
+    depends_on:
+      - app
+
+volumes:
+  secret-data:
+  caddy-data:
+  caddy-config:
